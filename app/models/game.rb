@@ -21,6 +21,16 @@ class Game < ApplicationRecord
     [player_x, player_o].compact
   end
 
+  def current_player_user
+    current_player == "X" ? player_x : player_o
+  end
+
+  def current_user_symbol(user)
+    return "X" if user == player_x
+    return "O" if user == player_o
+    nil
+  end
+
   def finished?
     status != "playing"
   end

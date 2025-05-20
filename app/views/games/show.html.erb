@@ -1,5 +1,24 @@
-<%= turbo_frame_tag "game" do %>
-  <div class="container mt-5 text-center">
-    <%= render partial: "game_frame", locals: { game: @game } %>
-  </div>
-<% end %>
+<%= turbo_stream_from "game_#{@game.id}" %>
+
+<div class="container text-center mt-5">
+  <h1 class="mb-4">Morpion</h1>
+
+  <%# Bouton pour passer en mode invitation %>
+  <% if @game.against_ai && @game.player_o.nil? %>
+    <%= button_to "Inviter un ami", invite_game_path(@game), method: :post, class: "btn btn-outline-primary mb-3" %>
+  <% end %>
+
+  <%# Bloc d'invitation si la partie est en attente d'un joueur 2 %>
+  <% if !@game.against_ai && @game.player_o.nil? %>
+    <div class="alert alert-info">
+      <p>Invite un ami à rejoindre la partie !</p>
+      <div class="input-group mb-2" style="max-width: 600px; margin: 0 auto;">
+        <input id="invite-link" type="text" class="form-control" value="<%= game_url(@game) %>" readonly>
+        <button class="btn btn-outline-secondary" type="button" onclick="navigator.clipboard.writeText(document.getElementById('invite-link').value); this.innerText='Copié !'; setTimeout(()=>this.innerText='Copier le lien', 1500)">Copier le lien</button>
+      </div>
+      <small>En attendant, tu peux jouer contre l'IA. Ton ami prendra la main dès qu'il rejoint la partie.</small>
+    </div>
+  <% end %>
+
+  <%= render partial: "game_frame", locals: { game: @game } %>
+</div>

@@ -24,16 +24,19 @@ class GamesController < ApplicationController
   def move
     index = params[:index].to_i
 
-    # 🧠 1. Player plays
-    if @game.current_player == "X"
-      @game.play_move(index, "X")
+    unless @game.current_player_user == current_user
+      redirect_to @game, alert: "Ce n'est pas ton tour." and return
     end
 
-    # 🧠 2. AI plays if the game continues
-    if !@game.finished? && @game.current_player == "O"
-      bot_move = RandomBot.pick_move(@game)
-      @game.play_move(bot_move, "O")
-    end
+    @game.play_move(index, @game.current_user_symbol(current_user))
+
+    # Diffuse la mise à jour à tous les abonnés Turbo Stream
+    Turbo::StreamsChannel.broadcast_replace_to(
+      "game_#{@game.id}",
+      target: "game",
+      partial: "games/game_frame",
+      locals: { game: @game }
+    )
 
     respond_to do |format|
       format.turbo_stream
@@ -49,6 +52,47 @@ class GamesController < ApplicationController
     @games = current_user.games.order(created_at: :desc)
   end
 
+  def invite
+    @game = Game.find(params[:id])
+    if @game.against_ai && @game.player_o.nil?
+      @game.update(against_ai: false)
+      # Diffuse la mise à jour à tous les abonnés Turbo Stream
+      Turbo::StreamsChannel.broadcast_replace_to(
+        "game_#{@game.id}",
+        target: "game",
+        partial: "games/game_frame",
+        locals: { game: @game }
+      )
+    end
+    redirect_to @game, notice: "Lien d'invitation généré !"
+  end
+
+  def create_1v1
+    invited_id = params[:invited_id]
+    game = Game.create!(
+      player_x: current_user,
+      player_o: User.find(invited_id),
+      against_ai: false
+    )
+    redirect_to game_path(game), notice: "Partie créée ! Partage le lien avec ton adversaire."
+  end
+
+  def join
+    game = Game.find(params[:id])
+    if game.player_o.nil?
+      game.update(player_o: current_user, against_ai: false)
+      # Diffuse la mise à jour à tous les abonnés Turbo Stream
+      Turbo::StreamsChannel.broadcast_replace_to(
+        "game_#{game.id}",
+        target: "game",
+        partial: "games/game_frame",
+        locals: { game: game }
+      )
+      redirect_to game_path(game), notice: "Tu as rejoint la partie !"
+    else
+      redirect_to game_path(game), alert: "La partie est déjà complète."
+    end
+  end
 
   private
 
