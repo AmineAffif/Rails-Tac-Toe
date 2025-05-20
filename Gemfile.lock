@@ -347,6 +347,7 @@ DEPENDENCIES
   bootsnap
   brakeman
   capybara
+  cgi (>= 0.3.3)
   cssbundling-rails
   debug
   error_highlight (>= 0.4.0)
