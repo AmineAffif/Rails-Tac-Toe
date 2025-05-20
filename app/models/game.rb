@@ -23,12 +23,7 @@ class Game < ApplicationRecord
 
   # Apply a move (index = 0 to 8)
   def play_move(index, symbol)
-    return false unless state[index].nil? && status == "playing"
-
-    state[index] = symbol
-    check_game_status(symbol)
-    toggle_player unless finished?
-    save
+    GameEngine.new(self).play_move(index, symbol)
   end
 
   # Check if the game is won or drawn
