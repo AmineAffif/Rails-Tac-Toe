@@ -6,7 +6,18 @@ Ce projet Ruby on Rails propose une expérience de morpion moderne :
 - Authentification sécurisée
 - Parties solo ou multi-joueurs (invitation par lien)
 - Rafraîchissement en temps réel grâce à Turbo Streams
-- UX moderne et responsive
+
+---
+
+## 🔗 Tester en ligne
+
+🧪 Tu peux essayer l'application directement ici :  
+👉 [https://rails-tac-toe.duckdns.org](https://rails-tac-toe.duckdns.org)
+
+> Deux comptes sont prêts à l’emploi pour tester rapidement :
+>
+> - **Utilisateur 1** : `user1@example.com` / `password`  
+> - **Utilisateur 2** : `user2@example.com` / `password`
 
 ---
 
@@ -67,7 +78,7 @@ Deux comptes utilisateurs sont déjà créés pour tester le mode multi-joueurs 
 
 ### 4. Fonctionnalités principales
 
-- **Parties solo** contre l'IA (option à venir)
+- **Parties solo** contre l'IA
 - **Parties multi-joueurs** par invitation
 - **Liste "Mes parties"** accessible dans le header
 - **Sécurité** : seuls les joueurs concernés peuvent accéder à une partie
