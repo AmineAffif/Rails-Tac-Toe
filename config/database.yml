@@ -19,7 +19,6 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
-
 development:
   <<: *default
   database: rails_tac_toe_development
@@ -80,6 +79,4 @@ test:
 #
 production:
   <<: *default
-  database: rails_tac_toe_production
-  username: rails_tac_toe
-  password: <%= ENV["RAILS_TAC_TOE_DATABASE_PASSWORD"] %>
+  url: <%= ENV['DATABASE_URL'] %>
