@@ -1,0 +1,6 @@
+<% if current_user %>
+  Connecté en tant que <strong><%= current_user.email %></strong> |
+  <%= link_to "Se déconnecter", "/logout", method: :delete, data: { turbo: false } %>
+<% else %>
+  <%= link_to "Se connecter", "/login" %>
+<% end %>

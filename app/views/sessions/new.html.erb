@@ -1,0 +1,26 @@
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+  <div class="w-100" style="max-width: 400px;">
+    <h1 class="text-center mb-4">Login</h1>
+    <%= form_with url: session_path, method: :post, local: true do |form| %>
+      <div class="mb-3">
+        <%= form.label :email, class: "form-label" %>
+        <%= form.email_field :email, class: "form-control", autofocus: true %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :password, class: "form-label" %>
+        <%= form.password_field :password, class: "form-control" %>
+      </div>
+      <% if flash[:alert] %>
+        <div class="alert alert-danger text-center">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+      <div class="d-grid">
+        <%= form.submit "Login", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+    <div class="text-center mt-3">
+      <%= link_to "No account? Register!", new_user_path, class: "btn btn-link" %>
+    </div>
+  </div>
+</div>

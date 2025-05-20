@@ -1,6 +1,21 @@
 require 'rails_helper'
 
 RSpec.describe Game, type: :model do
+  describe 'associations' do
+    it 'can belong to player_x and player_o (User)' do
+      user1 = create(:user)
+      user2 = create(:user)
+      game = create(:game, player_x: user1, player_o: user2)
+      expect(game.player_x).to eq(user1)
+      expect(game.player_o).to eq(user2)
+    end
+
+    it 'can be against AI' do
+      game = create(:game, against_ai: true)
+      expect(game.against_ai).to eq(true)
+    end
+  end
+
   describe '#initialize_board' do
     it 'initializes the board, current player, and status' do
       game = Game.new
