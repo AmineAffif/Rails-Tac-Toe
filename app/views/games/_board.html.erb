@@ -7,7 +7,7 @@
           <% if game.state[index].present? %>
             <strong><%= game.state[index] %></strong>
           <% elsif !game.finished? %>
-            <%= button_to "", move_game_path(game, index: index), method: :post, class: "btn btn-outline-dark", form: { data: { turbo_frame: "game" } } %>
+            <%= button_to "", move_game_path(game, index: index), method: :post, class: "btn btn-outline-dark", form: { data: { turbo_frame: "game" } }, style: "width: 64px; height: 64px; padding: 0;" %>
           <% end %>
         </td>
       <% end %>

@@ -1,0 +1,10 @@
+<div class="container mt-5">
+  <h2>Créer une partie 1v1</h2>
+  <%= form_with url: create_1v1_game_path, method: :post, local: true do |form| %>
+    <div class="mb-3">
+      <%= label_tag :invited_id, "Choisir un adversaire" %>
+      <%= select_tag :invited_id, options_from_collection_for_select(@users, :id, :email), class: "form-select" %>
+    </div>
+    <%= form.submit "Créer la partie", class: "btn btn-primary" %>
+  <% end %>
+</div>

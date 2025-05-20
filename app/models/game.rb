@@ -2,6 +2,8 @@ class Game < ApplicationRecord
   belongs_to :player_x, class_name: 'User', optional: true
   belongs_to :player_o, class_name: 'User', optional: true
 
+  after_update_commit :broadcast_game_update
+
   # Callbacks
   before_create :initialize_board
 
@@ -33,5 +35,16 @@ class Game < ApplicationRecord
 
   def finished?
     status != "playing"
+  end
+
+  private
+
+  def broadcast_game_update
+    Turbo::StreamsChannel.broadcast_replace_to(
+      "game_#{id}",
+      target: "game",
+      partial: "games/game_frame",
+      locals: { game: self }
+    )
   end
 end

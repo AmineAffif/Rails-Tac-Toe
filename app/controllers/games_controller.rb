@@ -1,5 +1,6 @@
 class GamesController < ApplicationController
   before_action :set_game, only: [:show, :move]
+  before_action :auto_join_player_o, only: [:show, :move]
   before_action :authorize_player!, only: [:show, :move]
 
   def new
@@ -10,34 +11,29 @@ class GamesController < ApplicationController
     unless current_user
       redirect_to new_session_path, alert: "You must be logged in to create a game." and return
     end
-    @game = Game.create!(
-      player_x: current_user,
-      player_o: nil,
-      against_ai: true
-    )
+    @game = GameCreator.new(current_user, against_ai: true).call
     redirect_to @game
   end
 
   def show
+    if @game.player_o.nil? && current_user && @game.player_x != current_user
+      @game.update(player_o: current_user, against_ai: false)
+      Turbo::StreamsChannel.broadcast_replace_to(
+        "game_#{@game.id}",
+        target: "game",
+        partial: "games/game_frame",
+        locals: { game: @game }
+      )
+      flash[:notice] = "Tu as rejoint la partie !"
+      redirect_to @game and return
+    end
   end
 
   def move
-    index = params[:index].to_i
-
-    unless @game.current_player_user == current_user
+    result = GameMoveHandler.new(@game, current_user, params[:index].to_i).call
+    if result == :not_your_turn
       redirect_to @game, alert: "Ce n'est pas ton tour." and return
     end
-
-    @game.play_move(index, @game.current_user_symbol(current_user))
-
-    # Diffuse la mise à jour à tous les abonnés Turbo Stream
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "game_#{@game.id}",
-      target: "game",
-      partial: "games/game_frame",
-      locals: { game: @game }
-    )
-
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to @game }
@@ -56,24 +52,14 @@ class GamesController < ApplicationController
     @game = Game.find(params[:id])
     if @game.against_ai && @game.player_o.nil?
       @game.update(against_ai: false)
-      # Diffuse la mise à jour à tous les abonnés Turbo Stream
-      Turbo::StreamsChannel.broadcast_replace_to(
-        "game_#{@game.id}",
-        target: "game",
-        partial: "games/game_frame",
-        locals: { game: @game }
-      )
     end
     redirect_to @game, notice: "Lien d'invitation généré !"
   end
 
   def create_1v1
     invited_id = params[:invited_id]
-    game = Game.create!(
-      player_x: current_user,
-      player_o: User.find(invited_id),
-      against_ai: false
-    )
+    invited_user = User.find(invited_id)
+    game = GameCreator.new(current_user, against_ai: false, invited_user: invited_user).call
     redirect_to game_path(game), notice: "Partie créée ! Partage le lien avec ton adversaire."
   end
 
@@ -98,6 +84,13 @@ class GamesController < ApplicationController
 
   def set_game
     @game = Game.find(params[:id])
+  end
+
+  def auto_join_player_o
+    if GameAutoJoiner.new(@game, current_user).call
+      flash[:notice] = "Tu as rejoint la partie !"
+      redirect_to @game and return
+    end
   end
 
   def authorize_player!

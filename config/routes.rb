@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   resources :games, only: [:new, :create, :show] do
     member do
       post :move
-      post :join
+      post :invite
     end
 
     collection do
