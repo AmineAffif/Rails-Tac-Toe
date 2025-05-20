@@ -1,0 +1,23 @@
+<div class="container mt-5 text-center">
+  <h1 class="mb-4">Morpion</h1>
+
+  <p class="lead">
+    <% if @game.finished? %>
+      <% if @game.status == "won" %>
+        <strong>Victoire de <%= @game.winner %> !</strong>
+      <% else %>
+        <strong>Match nul !</strong>
+      <% end %>
+    <% else %>
+      Au tour de <strong><%= @game.current_player %></strong>
+    <% end %>
+  </p>
+
+  <%= turbo_frame_tag "board" do %>
+    <%= render partial: "board", locals: { game: @game } %>
+  <% end %>
+
+  <div class="mt-4">
+    <%= link_to "Nouvelle partie", root_path, class: "btn btn-secondary" %>
+  </div>
+</div>
