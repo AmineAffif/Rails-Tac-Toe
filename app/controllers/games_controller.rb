@@ -41,6 +41,15 @@ class GamesController < ApplicationController
     end
   end
 
+  def my_games
+    unless current_user
+      redirect_to new_session_path, alert: "Vous devez être connecté pour voir vos parties." and return
+    end
+
+    @games = current_user.games.order(created_at: :desc)
+  end
+
+
   private
 
   def set_game

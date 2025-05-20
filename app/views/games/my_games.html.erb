@@ -1,0 +1,38 @@
+<div class="container mt-5">
+  <h2 class="mb-4">Mes parties</h2>
+
+  <% if @games.any? %>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Statut</th>
+          <th>Gagnant</th>
+          <th>Créée le</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @games.each do |game| %>
+          <tr>
+            <td><%= game.id %></td>
+            <td>
+              <% if game.status == "won" %>
+                <span class="badge bg-success">Gagnée</span>
+              <% elsif game.status == "draw" %>
+                <span class="badge bg-secondary">Nul</span>
+              <% else %>
+                <span class="badge bg-warning text-dark">En cours</span>
+              <% end %>
+            </td>
+            <td><%= game.winner.presence || "—" %></td>
+            <td><%= l(game.created_at, format: :short) %></td>
+            <td><%= link_to "Voir", game_path(game), class: "btn btn-sm btn-outline-primary" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="alert alert-info">Aucune partie jouée pour l’instant.</div>
+  <% end %>
+</div>

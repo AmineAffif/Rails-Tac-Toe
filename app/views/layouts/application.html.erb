@@ -24,6 +24,7 @@
           <a class="navbar-brand fw-bold" href="/">Rails Tac Toe</a>
           <div class="d-flex gap-2 ms-auto">
             <% if session[:user_id] && User.exists?(session[:user_id]) %>
+              <%= link_to "Mes parties", my_games_path, class: "btn btn-outline-dark" %>
               <%= button_to 'Logout', session_path, method: :delete, class: 'btn btn-outline-danger', form: { class: 'd-inline' } %>
             <% else %>
               <%= link_to 'Login', new_session_path, class: 'btn btn-outline-primary' %>

@@ -22,4 +22,6 @@ Rails.application.routes.draw do
       post :move
     end
   end
+
+  get "/my_games", to: "games#my_games"
 end
