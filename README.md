@@ -87,7 +87,7 @@ Deux comptes utilisateurs sont déjà créés pour tester le mode multi-joueurs 
 
 ## 📸 Aperçu
 
-![Aperçu du jeu de morpion](doc/screenshot.png)
+<img width="744" alt="image" src="https://github.com/user-attachments/assets/29596118-4479-414a-9281-0b29b8957d51" />
 
 ---
 
