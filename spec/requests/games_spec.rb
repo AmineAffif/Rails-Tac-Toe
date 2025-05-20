@@ -43,6 +43,32 @@ RSpec.describe "Games", type: :request do
       game = Game.last
       expect(game.player_x.email).to eq("integration@example.com")
     end
+
+    it "plays against AI until a player joins" do
+      # Login
+      post session_path, params: { email: user.email, password: "password" }
+      # Create game
+      post games_path
+      game = Game.last
+      
+      # Make a move as player X
+      post move_game_path(game, index: 0)
+      game.reload
+      
+      # AI should have made a move
+      expect(game.state.compact.count).to eq(2)
+      expect(game.current_player).to eq("X")
+      
+      # Another user joins
+      other_user = create(:user)
+      post session_path, params: { email: other_user.email, password: "password" }
+      get game_path(game)
+      
+      # Game should no longer be against AI
+      game.reload
+      expect(game.against_ai).to eq(false)
+      expect(game.player_o).to eq(other_user)
+    end
   end
 
   describe "Access control" do

@@ -34,6 +34,11 @@ class GamesController < ApplicationController
     if result == :not_your_turn
       redirect_to @game, alert: "Ce n'est pas ton tour." and return
     end
+
+    if @game.against_ai && @game.current_player == "O" && !@game.finished?
+      AiMoveHandler.new(@game).call
+    end
+
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to @game }
